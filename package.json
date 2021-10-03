@@ -1,0 +1,21 @@
+{
+  "name": "trello-ndha-api",
+  "version": "1.0.0",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "eslint": "eslint src"
+  },
+  "repository": "https://github.com/BigZapper/trello-ndha-api.git",
+  "author": "BigZapper <dokodemodoa2112@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "@babel/eslint-parser": "^7.15.7",
+    "eslint": "^7.32.0"
+  }
+}
