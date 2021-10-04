@@ -1,6 +1,5 @@
 import Joi from 'joi'
 import { getDB } from '*/config/mongodb'
-import { ObjectId } from 'bson'
 
 // Define board collection
 const boardCollectionName = 'boards'
