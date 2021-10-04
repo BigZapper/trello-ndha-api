@@ -16,25 +16,23 @@ const validateSchema = async (data) => {
   return await boardCollectionSchema.validateAsync(data, { abortEarly: false })
 }
 
-const findById = async (id) => {
-  try {
-    const result = await getDB().collection(boardCollectionName).findOne({ _id: ObjectId(id) })
-    console.log(result)
-    return result
-  } catch (error) {
-    console.log(error)
-  }
-}
+// const findById = async (id) => {
+//   try {
+//     const result = await getDB().collection(boardCollectionName).findOne({ _id: ObjectId(id) })
+//     console.log(result)
+//     return result
+//   } catch (error) {
+//     console.log(error)
+//   }
+// }
 
 const createNew = async (data) => {
   try {
     const value = await validateSchema(data)
     const result = await getDB().collection(boardCollectionName).insertOne(value)
-    // const newBoard = await findById(result.insertedId.toString())
-    // console.log(newBoard)
-    return result
+    return result.ops[0]
   } catch (error) {
-    console.log(error)
+    throw Error(error)
   }
 }
 
