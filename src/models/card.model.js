@@ -1,6 +1,6 @@
 import Joi from 'joi'
 import { getDB } from '*/config/mongodb'
-import { ObjectID } from 'mongodb'
+import { ObjectId } from 'mongodb'
 
 // Define card collection
 const cardCollectionName = 'cards'
@@ -18,16 +18,25 @@ const validateSchema = async (data) => {
   return await cardCollectionSchema.validateAsync(data, { abortEarly: false })
 }
 
+const findOneById = async (id) => {
+  try {
+    const result = await getDB().collection(cardCollectionName).findOne({ _id: ObjectId(id) })
+    return result
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
 const createNew = async (data) => {
   try {
     const validatedValue = await validateSchema(data)
     const insertValue = {
       ...validatedValue,
-      boardId: ObjectID(validatedValue.boardId),
-      columnId: ObjectID(validatedValue.columnId)
+      boardId: ObjectId(validatedValue.boardId),
+      columnId: ObjectId(validatedValue.columnId)
     }
     const result = await getDB().collection(cardCollectionName).insertOne(insertValue)
-    return result.ops[0]
+    return result
   } catch (error) {
     throw new Error(error)
   }
@@ -38,7 +47,7 @@ const createNew = async (data) => {
  */
 const deleteMany = async (ids) => {
   try {
-    const transformIds = ids.map(i => ObjectID(i))
+    const transformIds = ids.map(i => ObjectId(i))
     await getDB().collection(cardCollectionName).updateMany(
       { _id: { $in: transformIds } },
       { $set: { _destroy: true } }
@@ -52,15 +61,15 @@ const update = async (id, data) => {
   try {
     const updateData = { ...data }
     if (data.boardId) {
-      updateData.boardId = ObjectID(data.boardId)
+      updateData.boardId = ObjectId(data.boardId)
     }
     if (data.columnId) {
-      updateData.columnId = ObjectID(data.columnId)
+      updateData.columnId = ObjectId(data.columnId)
     }
     const result = await getDB().collection(cardCollectionName).findOneAndUpdate(
-      { _id: ObjectID(id) },
+      { _id: ObjectId(id) },
       { $set: updateData },
-      { returnOriginal: false }
+      { returnDocument: 'after' }
     )
     return result.value
   } catch (error) {
@@ -72,5 +81,6 @@ export const CardModel = {
   cardCollectionName,
   createNew,
   deleteMany,
-  update
+  update,
+  findOneById
 }
