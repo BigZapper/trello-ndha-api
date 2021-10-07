@@ -1,6 +1,6 @@
 import Joi from 'joi'
 import { getDB } from '*/config/mongodb'
-import { ObjectID } from 'mongodb'
+import { ObjectId } from 'mongodb'
 import { ColumnModel } from './column.model'
 import { CardModel } from './card.model'
 
@@ -18,21 +18,22 @@ const validateSchema = async (data) => {
   return await boardCollectionSchema.validateAsync(data, { abortEarly: false })
 }
 
-// const findById = async (id) => {
-//   try {
-//     const result = await getDB().collection(boardCollectionName).findOne({ _id: ObjectId(id) })
-//     console.log(result)
-//     return result
-//   } catch (error) {
-//     console.log(error)
-//   }
-// }
+
+const findOneById = async (id) => {
+  try {
+    const result = await getDB().collection(boardCollectionName).findOne({ _id: ObjectId(id) })
+    return result
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
 
 const createNew = async (data) => {
   try {
     const value = await validateSchema(data)
     const result = await getDB().collection(boardCollectionName).insertOne(value)
-    return result.ops[0]
+    return result
   } catch (error) {
     throw new Error(error)
   }
@@ -45,9 +46,9 @@ const createNew = async (data) => {
 const pushColumnOrder = async (boardId, columnId) => {
   try {
     const result = await getDB().collection(boardCollectionName).findOneAndUpdate(
-      { _id: ObjectID(boardId) },
+      { _id: ObjectId(boardId) },
       { $push: { columnOrder: columnId } },
-      { returnOriginal: false }
+      { returnDocument: 'after' }
     )
     return result.value
   } catch (error) {
@@ -60,7 +61,7 @@ const getFullBoard = async (boardId) => {
     const result = await getDB().collection(boardCollectionName).aggregate([
       {
         $match: {
-          _id: ObjectID(boardId),
+          _id: ObjectId(boardId),
           _destroy: false
         }
       },
@@ -91,9 +92,9 @@ const update = async (id, data) => {
   try {
     const updateData = { ...data }
     const result = await getDB().collection(boardCollectionName).findOneAndUpdate(
-      { _id: ObjectID(id) },
+      { _id: ObjectId(id) },
       { $set: updateData },
-      { returnOriginal: false }
+      { returnDocument: 'after' }
     )
     return result.value
   } catch (error) {
@@ -105,5 +106,6 @@ export const BoardModel = {
   createNew,
   getFullBoard,
   update,
-  pushColumnOrder
+  pushColumnOrder,
+  findOneById
 }
